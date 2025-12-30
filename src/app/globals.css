@@ -1,26 +1,38 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-primary: #cdb4db;
+  --color-brand-secondary: #ffc8dd;
+  --color-brand-accent: #bde0fe;
+  --color-brand-dark: #0f172a;
+  --font-display: var(--font-geist-sans); 
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #0f172a; /* Slate 900 */
+  --foreground: #f8fafc; /* Slate 50 */
+  --card: #1e293b;       /* Slate 800 */
+  --card-foreground: #f8fafc;
+  --primary: #a5b4fc;    /* Indigo 300 */
+  --primary-foreground: #0f172a;
+  --muted: #334155;      /* Slate 700 */
+  --muted-foreground: #94a3b8; /* Slate 400 */
+  --border: #334155;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-display), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Kiosk Utilities */
+.kiosk-btn {
+  @apply px-8 py-4 text-xl font-bold rounded-2xl transition-all duration-200 active:scale-95 touch-manipulation shadow-lg;
+}
+
+.kiosk-card {
+  @apply bg-[var(--card)] rounded-3xl border border-[var(--border)] shadow-xl overflow-hidden;
 }
