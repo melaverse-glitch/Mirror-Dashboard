@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { Check, RotateCcw } from "lucide-react";
+import { Check, RotateCcw, Download, Maximize2, X } from "lucide-react";
 
 interface ComparisonViewProps {
     originalImage: string;
@@ -11,16 +11,59 @@ interface ComparisonViewProps {
 }
 
 export default function ComparisonView({ originalImage, processedImage, onReset }: ComparisonViewProps) {
+    const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+
+    const handleDownload = () => {
+        if (processedImage) {
+            const link = document.createElement("a");
+            link.href = processedImage;
+            link.download = "mirror-clean-canvas.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+
     return (
-        <div className="w-full flex flex-col h-full animate-in slide-in-from-bottom duration-700">
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="w-full flex flex-col h-full animate-in slide-in-from-bottom duration-700 items-center">
+            {/* Lightbox Modal */}
+            {lightboxImage && (
+                <div
+                    className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-200"
+                    onClick={() => setLightboxImage(null)}
+                >
+                    <button
+                        className="absolute top-6 right-6 p-4 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                        onClick={() => setLightboxImage(null)}
+                    >
+                        <X className="w-8 h-8 text-white" />
+                    </button>
+                    <div className="relative w-full max-w-4xl h-full max-h-[90vh] aspect-[3/4]">
+                        <Image
+                            src={lightboxImage}
+                            alt="Full View"
+                            fill
+                            className="object-contain"
+                            quality={100}
+                        />
+                    </div>
+                </div>
+            )}
+
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 w-full max-w-5xl">
 
                 {/* Original */}
-                <div className="kiosk-card flex flex-col relative group">
+                <div
+                    className="kiosk-card flex flex-col relative group aspect-[3/4] cursor-zoom-in"
+                    onClick={() => setLightboxImage(originalImage)}
+                >
                     <div className="absolute top-6 left-6 z-10 bg-black/50 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
                         <span className="text-white font-bold tracking-wide uppercase">Original</span>
                     </div>
-                    <div className="relative w-full h-full min-h-[400px]">
+                    <div className="absolute bottom-6 right-6 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 p-2 rounded-full">
+                        <Maximize2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="relative w-full h-full">
                         <Image
                             src={originalImage}
                             alt="Original"
@@ -32,13 +75,34 @@ export default function ComparisonView({ originalImage, processedImage, onReset 
                 </div>
 
                 {/* Processed / Result */}
-                <div className="kiosk-card flex flex-col relative overflow-hidden border-brand-primary/50 shadow-[0_0_50px_-12px_rgba(165,180,252,0.3)]">
+                <div
+                    className="kiosk-card flex flex-col relative overflow-hidden border-brand-primary/50 shadow-[0_0_50px_-12px_rgba(165,180,252,0.3)] aspect-[3/4] group cursor-zoom-in"
+                    onClick={() => processedImage && setLightboxImage(processedImage)}
+                >
                     <div className="absolute top-6 left-6 z-10 bg-brand-primary/90 text-brand-dark px-6 py-2 rounded-full font-bold shadow-lg flex items-center gap-2">
                         <Check className="w-5 h-5" />
                         <span className="tracking-wide uppercase">Clean Canvas</span>
                     </div>
 
-                    <div className="relative w-full h-full min-h-[400px] bg-black/20">
+                    {processedImage && (
+                        <div className="absolute bottom-6 right-6 z-10 flex gap-2">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDownload();
+                                }}
+                                className="p-3 bg-brand-primary text-brand-dark rounded-full hover:scale-110 transition-transform shadow-lg"
+                                title="Download Image"
+                            >
+                                <Download className="w-6 h-6" />
+                            </button>
+                            <div className="p-3 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Maximize2 className="w-6 h-6" />
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="relative w-full h-full bg-black/20">
                         {processedImage ? (
                             <Image
                                 src={processedImage}
